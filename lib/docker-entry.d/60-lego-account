@@ -4,7 +4,7 @@ set -e
 set -u
 
 ECHO=/bin/echo
-MKDIR=/bin/mkdir
+INSTALL=/usr/bin/install
 
 # see:
 # https://github.com/go-acme/lego/blob/master/cmd/accounts_storage.go
@@ -40,9 +40,21 @@ if [ -n "${CERTHUB_LEGO_ACCOUNT_KEY:-}" ]; then
     CERTHUB_LEGO_ACCOUNT_KEY_DIR="${CERTHUB_LEGO_ACCOUNT_KEY_DIR:-${CERTHUB_LEGO_ACCOUNT_DIR}/keys}"
     CERTHUB_LEGO_ACCOUNT_KEY_FILE="${CERTHUB_LEGO_ACCOUNT_KEY_FILE:-${CERTHUB_LEGO_ACCOUNT_KEY_DIR}/${CERTHUB_LEGO_ACCOUNT_EMAIL}.key}"
 
-    ${MKDIR} -m 0700 -p "${CERTHUB_LEGO_ACCOUNT_KEY_DIR}"
+    ${INSTALL} -m 0700 -D -d "${CERTHUB_LEGO_ACCOUNT_KEY_DIR}"
     if [ ! -e "${CERTHUB_LEGO_ACCOUNT_KEY_FILE}" ]; then
         (umask 077 && ${ECHO} "${CERTHUB_LEGO_ACCOUNT_KEY}" > "${CERTHUB_LEGO_ACCOUNT_KEY_FILE}")
+    fi
+fi
+
+# Optionally copy lego acme private key file.
+if [ -n "${CERTHUB_LEGO_ACCOUNT_KEY_SRC_FILE:-}" ]; then
+    lego_account_prepare
+    CERTHUB_LEGO_ACCOUNT_KEY_DIR="${CERTHUB_LEGO_ACCOUNT_KEY_DIR:-${CERTHUB_LEGO_ACCOUNT_DIR}/keys}"
+    CERTHUB_LEGO_ACCOUNT_KEY_FILE="${CERTHUB_LEGO_ACCOUNT_KEY_FILE:-${CERTHUB_LEGO_ACCOUNT_KEY_DIR}/${CERTHUB_LEGO_ACCOUNT_EMAIL}.key}"
+
+    ${INSTALL} -m 0700 -D -d "${CERTHUB_LEGO_ACCOUNT_KEY_DIR}"
+    if [ ! -e "${CERTHUB_LEGO_ACCOUNT_KEY_FILE}" ]; then
+        ${INSTALL} -m 0600 "${CERTHUB_LEGO_ACCOUNT_KEY_SRC_FILE}" "${CERTHUB_LEGO_ACCOUNT_KEY_FILE}"
     fi
 fi
 
@@ -51,7 +63,7 @@ if [ -n "${CERTHUB_LEGO_ACCOUNT_CONF:-}" ]; then
     lego_account_prepare
     CERTHUB_LEGO_ACCOUNT_CONF_FILE="${CERTHUB_LEGO_ACCOUNT_CONF_FILE:-${CERTHUB_LEGO_ACCOUNT_DIR}/account.json}"
 
-    ${MKDIR} -m 0700 -p "${CERTHUB_LEGO_ACCOUNT_DIR}"
+    ${INSTALL} -m 0700 -D -d "${CERTHUB_LEGO_ACCOUNT_DIR}"
     if [ ! -e "${CERTHUB_LEGO_ACCOUNT_CONF_FILE}" ]; then
         (umask 077 && ${ECHO} "${CERTHUB_LEGO_ACCOUNT_CONF}" > "${CERTHUB_LEGO_ACCOUNT_CONF_FILE}")
     fi
