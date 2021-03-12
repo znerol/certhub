@@ -8,7 +8,7 @@ testing infrastructure is reachable from the internet.
 ## Running
 
 Use `make` to run the tests. Caution: This will build and run the necessary
-docker containers. Images are named `certhub-integration-*`.
+containers. Images are named `certhub-integration-*`.
 
 ```
     make all
@@ -31,11 +31,10 @@ like `find src/local -name '*.in'`. The environment can be selected using the
     make testenv=local all
 ```
 
-Note: Docker images are only rebuilt when the docker context changes. It is
-necessary to remove `controller/context` after changing anything in the `src`
-directory.
+Note: Images are only rebuilt when the build context changes. It is necessary
+to remove `controller/context` after changing anything in the `src` directory.
 
-## Note: Docker and systemd
+## Note: Containers and systemd
 
 Certhub ships with numerous systemd units. In order to really test all of those
 components it is desirable to run systemd on the testing infrastructure.
