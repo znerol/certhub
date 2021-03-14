@@ -10,13 +10,14 @@ test ! -e "${MAILBIN}"
 WORKDIR=$(mktemp -d)
 MAILOUT="${WORKDIR}/mail.out"
 cleanup() {
-    # Show logs from systemd unit
-    journalctl -u certhub-cert-send@send-test-with-multi.service
     # Remove working directory
     rm -rf "${WORKDIR}"
     rm -f "${MAILBIN}"
 }
 trap cleanup EXIT
+
+# Show logs from systemd unit
+journalctl -fu certhub-cert-send@send-test-with-multi.service &
 
 chgrp certhub "${WORKDIR}"
 chmod 770 "${WORKDIR}"

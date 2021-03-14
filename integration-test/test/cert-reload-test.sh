@@ -6,16 +6,17 @@ set -x
 
 WORKDIR=$(mktemp -d)
 cleanup() {
-    # Show logs from systemd unit
-    journalctl -u test-tls-service@instance1.service
-    journalctl -u test-tls-service@instance2.service
-    journalctl -u test-fail-service@instance3.service
-    journalctl -u test-tls-service@instance4.service
-    journalctl -u certhub-cert-reload@reload-test.service
     # Remove working directory
     rm -rf "${WORKDIR}"
 }
 trap cleanup EXIT
+
+# Show logs from systemd unit
+journalctl -fu test-tls-service@instance1.service &
+journalctl -fu test-tls-service@instance2.service &
+journalctl -fu test-fail-service@instance3.service &
+journalctl -fu test-tls-service@instance4.service &
+journalctl -fu certhub-cert-reload@reload-test.service &
 
 cat <<EOF > /etc/systemd/system/test-tls-service@.service
 [Service]

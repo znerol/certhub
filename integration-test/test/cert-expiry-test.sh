@@ -6,14 +6,15 @@ set -x
 
 WORKDIR=$(mktemp -d)
 cleanup() {
-    # Show logs from systemd unit
-    journalctl -u certhub-cert-expiry@expiry-test.service
     # Remove working directory
     rm -rf "${WORKDIR}"
 }
 trap cleanup EXIT
 
 chmod 0755 "${WORKDIR}"
+
+# Show logs from systemd unit
+journalctl -fu certhub-cert-expiry@expiry-test.service &
 
 # Private key for certificates.
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out "${WORKDIR}/key.pem"

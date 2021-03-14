@@ -15,9 +15,10 @@ cat <<EOF | /bin/su -s /bin/sh - certhub
     git commit --allow-empty --message="From controller: Hello node!"
 EOF
 
+journalctl -fu "certhub-repo-push@node:-var-lib-certhub-certs.git.service" &
+
 if systemctl start "certhub-repo-push@node:-var-lib-certhub-certs.git.service"; then
     STATUS=0
 fi
-journalctl -u "certhub-repo-push@node:-var-lib-certhub-certs.git.service"
 
 exit ${STATUS}
